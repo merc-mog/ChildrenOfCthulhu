@@ -6,9 +6,9 @@ public class PlayerController : MonoBehaviour {
 	[HideInInspector]public bool hide = false;
 	public float speed;
 	public float searchRadius = 1f;
+	public bool isHidden = false;
 
 	private Rigidbody2D rb2D;
-	private bool isHidden = false;
 	private GameObject objectHiddenIn;
 
 	void Awake()
@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour {
 		// If the player is hidden, keep the player under the shelter
 		if (isHidden) 
 		{
-			transform.position = objectHiddenIn.transform.position;
+			transform.position = new Vector3(objectHiddenIn.transform.position.x, objectHiddenIn.transform.position.y, 0);
 		}
 	}
 }
