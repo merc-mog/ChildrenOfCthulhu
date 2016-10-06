@@ -3,17 +3,22 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
-	[HideInInspector]public bool hide = false;
+	[HideInInspector]public bool canHide = false;
 	public float speed;
 	public float searchRadius = 1f;
 	public bool isHidden = false;
+	public int level = 1;
+	public int hp = 3;
+	public int stomach = 0;
 
 	private Rigidbody2D rb2D;
 	private GameObject objectHiddenIn;
+	private float levelThreshold;
 
 	void Awake()
 	{
 		rb2D = GetComponent<Rigidbody2D> ();
+		levelThreshold = 30;
 	}
 
 	void Update()
@@ -23,11 +28,11 @@ public class PlayerController : MonoBehaviour {
 
 		// Check to see if the player can hide in shelter
 		int i = 0;
-		while (i < objectsInArea.Length && !hide)
+		while (i < objectsInArea.Length && !canHide)
 		{
-			if (objectsInArea [i].tag == "Shelter" && !hide)
+			if (objectsInArea [i].tag == "Shelter" && !canHide)
 			{
-				hide = true;
+				canHide = true;
 				objectHiddenIn = objectsInArea [i].gameObject;
 				break;
 			}
@@ -36,13 +41,19 @@ public class PlayerController : MonoBehaviour {
 
 		if (Physics2D.OverlapCircleAll(transform.position, searchRadius).Length <= 1) 
 		{
-			hide = false;
+			canHide = false;
 		}
 
+		// Rotation
 		if (moveDirection != Vector2.zero) 
 		{
 			float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.AngleAxis (angle, Vector3.forward);
+			transform.rotation = Quaternion.AngleAxis (angle - 90, Vector3.forward);
+		}
+
+		if (stomach >= levelThreshold) 
+		{
+			LevelUp ();
 		}
 	}
 
@@ -59,7 +70,7 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		// If the player can hide and presses space, hide the character
-		if (hide && Input.GetButtonDown ("Jump") && !isHidden) 
+		if (canHide && Input.GetButtonDown ("Jump") && !isHidden) 
 		{
 			isHidden = true;
 		} 
@@ -73,5 +84,29 @@ public class PlayerController : MonoBehaviour {
 		{
 			transform.position = new Vector3(objectHiddenIn.transform.position.x, objectHiddenIn.transform.position.y, 0);
 		}
+	}
+
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if(other.gameObject.CompareTag("Enemy"))
+		{
+			if (other.gameObject.GetComponent<EnemyMovement> ().level > level) 
+			{
+				hp--;
+			} 
+			else 
+			{
+				other.gameObject.SetActive (false);
+				stomach += other.gameObject.GetComponent<EnemyMovement> ().level * 10;
+			}
+		}
+	}
+
+	void LevelUp()
+	{
+		levelThreshold += levelThreshold;
+		level++;
+
+		gameObject.GetComponent<SpriteRenderer> ().sprite = Resources.Load("Cthulhu_" + level, typeof(Sprite)) as Sprite;
 	}
 }

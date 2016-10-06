@@ -7,13 +7,16 @@ public class EnemyMovement : MonoBehaviour {
 	public float searchRadius = 1f;
 	public float speed = 20;
 	public float maxMovement;
+	public int level;
 
 	private Rigidbody2D rb2D;
 	private Transform player;
 	private bool chasing = false;
+	private bool isAggro = true;
+	private bool fleeing = false;
+	private bool hasMove = false;
 	private float moveStartTime = 0f;
 	private float moveEndTime = 0f;
-	private bool hasMove = false;
 
 	void Awake () 
 	{
@@ -31,11 +34,20 @@ public class EnemyMovement : MonoBehaviour {
 		{
 			if (objectsInArea [i].tag == "Player" && !player.GetComponent<PlayerController>().isHidden) 
 			{
-				chasing = true;
+				if (isAggro)
+				{
+					chasing = true;
+				} 
+				else 
+				{
+					fleeing = true;
+				}
+
 				break;
 			}
 
 			chasing = false;
+			fleeing = false;
 
 			i++;
 		}
@@ -43,7 +55,14 @@ public class EnemyMovement : MonoBehaviour {
 		if (moveDirection != Vector2.zero) 
 		{
 			float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.AngleAxis (angle, Vector3.forward);
+			transform.rotation = Quaternion.AngleAxis (angle - 90, Vector3.forward);
+		}
+
+		// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
+		if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > level) 
+		{
+			//c2D.isTrigger = true;
+			isAggro = false;
 		}
 	}
 
@@ -56,6 +75,11 @@ public class EnemyMovement : MonoBehaviour {
 			dir = player.transform.position - transform.position;
 			rb2D.AddForce (dir * speed);
 		} 
+		else if (fleeing)
+		{
+			dir = -(player.transform.position - transform.position);
+			rb2D.AddForce (dir * speed);
+		}
 		else 
 		{
 			if (!hasMove)
