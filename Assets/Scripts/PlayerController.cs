@@ -19,22 +19,30 @@ public class PlayerController : MonoBehaviour {
 	void Update()
 	{
 		Collider2D[] objectsInArea = Physics2D.OverlapCircleAll(transform.position, searchRadius);
+		Vector2 moveDirection = rb2D.velocity;
 
+		// Check to see if the player can hide in shelter
 		int i = 0;
 		while (i < objectsInArea.Length && !hide)
 		{
 			if (objectsInArea [i].tag == "Shelter" && !hide)
 			{
 				hide = true;
-				//isHidden = true;
 				objectHiddenIn = objectsInArea [i].gameObject;
 				break;
 			}
 			i++;
 		}
 
-		if (Physics2D.OverlapCircleAll(transform.position, searchRadius).Length == 1) {
+		if (Physics2D.OverlapCircleAll(transform.position, searchRadius).Length <= 1) 
+		{
 			hide = false;
+		}
+
+		if (moveDirection != Vector2.zero) 
+		{
+			float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+			transform.rotation = Quaternion.AngleAxis (angle, Vector3.forward);
 		}
 	}
 
@@ -42,7 +50,7 @@ public class PlayerController : MonoBehaviour {
 	{
 		float moveHorizontal = Input.GetAxis ("Horizontal");
 		float moveVeritcal = Input.GetAxis ("Vertical");
-		Vector2 movement = new Vector2 (moveHorizontal, moveVeritcal);
+		Vector3 movement = new Vector3 (moveHorizontal, moveVeritcal, 0);
 
 		// Movement
 		if (!isHidden) 

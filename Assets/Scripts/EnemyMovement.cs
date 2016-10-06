@@ -13,6 +13,7 @@ public class EnemyMovement : MonoBehaviour {
 	private bool chasing = false;
 	private float moveStartTime = 0f;
 	private float moveEndTime = 0f;
+	private bool hasMove = false;
 
 	void Awake () 
 	{
@@ -23,6 +24,7 @@ public class EnemyMovement : MonoBehaviour {
 	void Update () 
 	{
 		Collider2D[] objectsInArea = Physics2D.OverlapCircleAll (transform.position, searchRadius);
+		Vector2 moveDirection = rb2D.velocity;
 
 		int i = 0;
 		while (i < objectsInArea.Length) 
@@ -37,12 +39,17 @@ public class EnemyMovement : MonoBehaviour {
 
 			i++;
 		}
+
+		if (moveDirection != Vector2.zero) 
+		{
+			float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+			transform.rotation = Quaternion.AngleAxis (angle, Vector3.forward);
+		}
 	}
 
 	void FixedUpdate ()
 	{
 		Vector2 dir;
-		bool hasMove = false;
 
 		if (chasing) 
 		{
@@ -55,9 +62,8 @@ public class EnemyMovement : MonoBehaviour {
 			{
 				dir = new Vector2 (Random.Range (-maxMovement, maxMovement), Random.Range (-maxMovement, maxMovement));
 				rb2D.AddForce (dir * speed);
-
 				moveStartTime = Time.time;
-				moveEndTime = moveStartTime + 500000f;
+				moveEndTime = moveStartTime + 1f;
 				hasMove = true;
 			}
 
