@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody2D rb2D;
 	private GameObject objectHiddenIn;
 	private float levelThreshold;
+	private int maxLevel = 3;
 
 	void Awake()
 	{
@@ -51,10 +52,13 @@ public class PlayerController : MonoBehaviour {
 			transform.rotation = Quaternion.AngleAxis (angle - 90, Vector3.forward);
 		}
 
-		if (stomach >= levelThreshold) 
+		// Check to see if stomach is big enough to level up
+		if (stomach >= levelThreshold && level < maxLevel) 
 		{
 			LevelUp ();
 		}
+
+		CheckIfGameOver ();
 	}
 
 	void FixedUpdate()
@@ -93,6 +97,7 @@ public class PlayerController : MonoBehaviour {
 			if (other.gameObject.GetComponent<EnemyMovement> ().level > level) 
 			{
 				hp--;
+				rb2D.AddForce (other.gameObject.GetComponent<EnemyMovement> ().rb2D.velocity);
 			} 
 			else 
 			{
@@ -108,5 +113,12 @@ public class PlayerController : MonoBehaviour {
 		level++;
 
 		gameObject.GetComponent<SpriteRenderer> ().sprite = Resources.Load("Cthulhu_" + level, typeof(Sprite)) as Sprite;
+	}
+
+	void CheckIfGameOver()
+	{
+		if (hp <= 0) {
+			gameObject.SetActive (false);
+		}
 	}
 }

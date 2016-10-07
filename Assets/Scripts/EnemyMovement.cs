@@ -8,8 +8,8 @@ public class EnemyMovement : MonoBehaviour {
 	public float speed = 20;
 	public float maxMovement;
 	public int level;
+	[HideInInspector]public Rigidbody2D rb2D;
 
-	private Rigidbody2D rb2D;
 	private Transform player;
 	private bool chasing = false;
 	private bool isAggro = true;
@@ -61,7 +61,6 @@ public class EnemyMovement : MonoBehaviour {
 		// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
 		if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > level) 
 		{
-			//c2D.isTrigger = true;
 			isAggro = false;
 		}
 	}
