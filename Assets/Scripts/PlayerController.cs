@@ -94,22 +94,21 @@ public class PlayerController : MonoBehaviour {
 	{
 		if(other.gameObject.CompareTag("Enemy"))
 		{
-			if (other.gameObject.GetComponent<EnemyMovement> ().level > level) 
+			if (other.gameObject.GetComponent<EnemyLevel> ().level > level) 
 			{
 				hp--;
-				rb2D.AddForce (other.gameObject.GetComponent<EnemyMovement> ().rb2D.velocity);
 			} 
 			else 
 			{
 				other.gameObject.SetActive (false);
-				stomach += other.gameObject.GetComponent<EnemyMovement> ().level * 10;
+				stomach += other.gameObject.GetComponent<EnemyLevel> ().level * 10;
 			}
 		}
 	}
 
 	void LevelUp()
 	{
-		levelThreshold += levelThreshold;
+		levelThreshold *= levelThreshold / 10;
 		level++;
 
 		gameObject.GetComponent<SpriteRenderer> ().sprite = Resources.Load("Cthulhu_" + level, typeof(Sprite)) as Sprite;

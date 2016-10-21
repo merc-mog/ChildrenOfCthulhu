@@ -2,21 +2,21 @@
 using System.Collections;
 using Random = UnityEngine.Random;
 
-public class EnemyMovement : MonoBehaviour {
+public class MedusaMovement : MonoBehaviour {
 
-	public float searchRadius = 1f;
-	public float speed = 20;
+	public float searchRadius = 1.5f;
+	public float speed;
 	public float maxMovement;
-	public int level;
 	[HideInInspector]public Rigidbody2D rb2D;
 
 	private Transform player;
 	private bool chasing = false;
 	private bool isAggro = true;
 	private bool fleeing = false;
-	private bool hasMove = false;
 	private float moveStartTime = 0f;
 	private float moveEndTime = 0f;
+	private Vector2 dir;
+	private bool hasMove = false;
 
 	void Awake () 
 	{
@@ -59,7 +59,7 @@ public class EnemyMovement : MonoBehaviour {
 		}
 
 		// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
-		if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > level) 
+		if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > this.GetComponent<EnemyLevel>().level) 
 		{
 			isAggro = false;
 		}
@@ -67,17 +67,18 @@ public class EnemyMovement : MonoBehaviour {
 
 	void FixedUpdate ()
 	{
-		Vector2 dir;
-
+		// Determine if the enemy should chase the player or flee from the player.
 		if (chasing) 
 		{
 			dir = player.transform.position - transform.position;
 			rb2D.AddForce (dir * speed);
+			hasMove = false;
 		} 
 		else if (fleeing)
 		{
 			dir = -(player.transform.position - transform.position);
 			rb2D.AddForce (dir * speed);
+			hasMove = false;
 		}
 		else 
 		{
