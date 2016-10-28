@@ -65,10 +65,11 @@ public class SharkMovement : MonoBehaviour {
 		}
 
 		// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
-		if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > this.GetComponent<EnemyLevel> ().level)
-		{
+
+		if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > this.GetComponent<EnemyLevel> ().level) {
 			isAggro = false;
 		}
+
 	}
 
 	void FixedUpdate ()

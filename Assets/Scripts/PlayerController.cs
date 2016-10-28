@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
@@ -10,16 +11,20 @@ public class PlayerController : MonoBehaviour {
 	public int level = 1;
 	public int hp = 3;
 	public int stomach = 0;
+	public Text stomachText;
+	public Text hpText;
 
 	private Rigidbody2D rb2D;
 	private GameObject objectHiddenIn;
 	private float levelThreshold;
 	private int maxLevel = 3;
 
-	void Awake()
+	void Start()
 	{
 		rb2D = GetComponent<Rigidbody2D> ();
 		levelThreshold = 30;
+		stomachText.text = "Sustenance: " + stomach;
+		hpText.text = "HP: " + hp;
 	}
 
 	void Update()
@@ -97,11 +102,13 @@ public class PlayerController : MonoBehaviour {
 			if (other.gameObject.GetComponent<EnemyLevel> ().level > level) 
 			{
 				hp--;
+				hpText.text = "HP: " + hp;
 			} 
 			else 
 			{
 				other.gameObject.SetActive (false);
 				stomach += other.gameObject.GetComponent<EnemyLevel> ().level * 10;
+				stomachText.text = "Sustenance: " + stomach;
 			}
 		}
 	}
@@ -117,7 +124,9 @@ public class PlayerController : MonoBehaviour {
 	void CheckIfGameOver()
 	{
 		if (hp <= 0) {
-			gameObject.SetActive (false);
+			enabled = false;
+
+			GameManager.instance.GameOver ();
 		}
 	}
 }
