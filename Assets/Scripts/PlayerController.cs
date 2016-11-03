@@ -32,38 +32,44 @@ public class PlayerController : MonoBehaviour {
 		Collider2D[] objectsInArea = Physics2D.OverlapCircleAll(transform.position, searchRadius);
 		Vector2 moveDirection = rb2D.velocity;
 
-		// Check to see if the player can hide in shelter
-		int i = 0;
-		while (i < objectsInArea.Length && !canHide)
+		if (GameManager.instance.onPauseScreen) 
 		{
-			if (objectsInArea [i].tag == "Shelter" && !canHide)
+			rb2D.gravityScale = 0f;
+			return;
+		} else 	{
+			// Check to see if the player can hide in shelter
+			int i = 0;
+			while (i < objectsInArea.Length && !canHide) 
 			{
-				canHide = true;
-				objectHiddenIn = objectsInArea [i].gameObject;
-				break;
+				if (objectsInArea [i].tag == "Shelter" && !canHide) 
+				{
+					canHide = true;
+					objectHiddenIn = objectsInArea [i].gameObject;
+					break;
+				}
+				i++;
 			}
-			i++;
-		}
 
-		if (Physics2D.OverlapCircleAll(transform.position, searchRadius).Length <= 1) 
-		{
-			canHide = false;
-		}
+			if (Physics2D.OverlapCircleAll (transform.position, searchRadius).Length <= 1) 
+			{
+				canHide = false;
+			}
 
-		// Rotation
-		if (moveDirection != Vector2.zero) 
-		{
-			float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.AngleAxis (angle - 90, Vector3.forward);
-		}
+			// Rotation
+			if (moveDirection != Vector2.zero) 
+			{
+				float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+				transform.rotation = Quaternion.AngleAxis (angle - 90, Vector3.forward);
+			}
 
-		// Check to see if stomach is big enough to level up
-		if (stomach >= levelThreshold && level < maxLevel) 
-		{
-			LevelUp ();
-		}
+			// Check to see if stomach is big enough to level up
+			if (stomach >= levelThreshold && level < maxLevel) 
+			{
+				LevelUp ();
+			}
 
-		CheckIfGameOver ();
+			CheckIfGameOver ();
+		}
 	}
 
 	void FixedUpdate()
@@ -82,8 +88,7 @@ public class PlayerController : MonoBehaviour {
 		if (canHide && Input.GetButtonDown ("Jump") && !isHidden) 
 		{
 			isHidden = true;
-		} 
-		else if (isHidden && Input.GetButtonDown ("Jump")) // If the player is already hidden and presses space, reveal the character
+		} else if (isHidden && Input.GetButtonDown ("Jump")) // If the player is already hidden and presses space, reveal the character
 		{
 			isHidden = false;
 		}
@@ -103,9 +108,7 @@ public class PlayerController : MonoBehaviour {
 			{
 				hp--;
 				hpText.text = "HP: " + hp;
-			} 
-			else 
-			{
+			} else {
 				other.gameObject.SetActive (false);
 				stomach += other.gameObject.GetComponent<EnemyLevel> ().level * 10;
 				stomachText.text = "Sustenance: " + stomach;
@@ -115,7 +118,7 @@ public class PlayerController : MonoBehaviour {
 
 	void LevelUp()
 	{
-		levelThreshold *= levelThreshold / 10;
+		levelThreshold *= (levelThreshold / 10);
 		level++;
 
 		gameObject.GetComponent<SpriteRenderer> ().sprite = Resources.Load("Cthulhu_" + level, typeof(Sprite)) as Sprite;
@@ -123,7 +126,8 @@ public class PlayerController : MonoBehaviour {
 
 	void CheckIfGameOver()
 	{
-		if (hp <= 0) {
+		if (hp <= 0) 
+		{
 			enabled = false;
 
 			GameManager.instance.GameOver ();

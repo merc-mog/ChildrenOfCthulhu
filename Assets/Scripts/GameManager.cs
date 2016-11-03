@@ -9,12 +9,14 @@ public class GameManager : MonoBehaviour {
 	public static GameManager instance = null;
 	public int sustenanceLevel = 0;
 	public float levelStartDelay = 2f;
+	public bool onPauseScreen = false;
 
 	//private List<EnemyMovement> enemies;
 	private int level = 0;
 	private GameObject gameOverImage;
-	private Text levelText;
 	private GameObject levelImage;
+	private GameObject pauseMenu;
+	private Text levelText;
 	private bool doingSetup = false;
 
 	// Use this for initialization
@@ -27,6 +29,8 @@ public class GameManager : MonoBehaviour {
 
 		DontDestroyOnLoad (gameObject);
 
+		pauseMenu = GameObject.Find ("PauseMenuPanel");
+
 		//enemies = new List<EnemyMovement> ();
 		InitGame();
 	}
@@ -34,8 +38,16 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
+		// Freeze the game while doing setup?
 		if (doingSetup)
 			return;
+
+		// Toggle the Pause Menu when the escape key is pressed
+		if (Input.GetKeyDown ("escape"))
+		{
+			TogglePauseMenu ();
+		}
+			
 	}
 
 	void InitGame()
@@ -93,5 +105,18 @@ public class GameManager : MonoBehaviour {
 		gameOverImage.SetActive (true);
 
 		enabled = false;
+	}
+
+	void TogglePauseMenu()
+	{
+		// Check to see if the Pause Menu is already up
+		if (pauseMenu.activeSelf) // If it is, deactivate it.
+		{
+			pauseMenu.SetActive (false);
+			onPauseScreen = false;
+		} else { // Else if it's not, activate it and freeze elements on the screen.
+			pauseMenu.SetActive (true);
+			onPauseScreen = true;
+		}
 	}
 }

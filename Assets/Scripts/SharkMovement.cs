@@ -34,42 +34,46 @@ public class SharkMovement : MonoBehaviour {
 		Collider2D[] objectsInArea = Physics2D.OverlapCircleAll (transform.position, searchRadius);
 		Vector2 moveDirection = rb2D.velocity;
 
-		int i = 0;
-		while (i < objectsInArea.Length) 
+		if (GameManager.instance.onPauseScreen) 
 		{
-			if (objectsInArea [i].tag == "Player" && !player.GetComponent<PlayerController>().isHidden) 
+			rb2D.gravityScale = 0f;
+			return;
+		} else {
+			int i = 0;
+			while (i < objectsInArea.Length) 
 			{
-				if (isAggro)
+				if (objectsInArea [i].tag == "Player" && !player.GetComponent<PlayerController> ().isHidden)
 				{
-					chasing = true;
-				} 
-				else 
-				{
-					fleeing = true;
+					if (isAggro) 
+					{
+						chasing = true;
+					} else {
+						fleeing = true;
+					}
+
+					break;
 				}
 
-				break;
+				chasing = false;
+				fleeing = false;
+
+				i++;
 			}
 
-			chasing = false;
-			fleeing = false;
+			// Changes direction the sprite is facing
+			if (moveDirection != Vector2.zero) 
+			{
+				float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+				transform.rotation = Quaternion.AngleAxis (angle - 180, Vector3.forward);
+			}
 
-			i++;
+			// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
+
+			if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > this.GetComponent<EnemyLevel> ().level) 
+			{
+				isAggro = false;
+			}
 		}
-
-		// Changes direction the sprite is facing
-		if (moveDirection != Vector2.zero) 
-		{
-			float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.AngleAxis (angle - 180, Vector3.forward);
-		}
-
-		// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
-
-		if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > this.GetComponent<EnemyLevel> ().level) {
-			isAggro = false;
-		}
-
 	}
 
 	void FixedUpdate ()
