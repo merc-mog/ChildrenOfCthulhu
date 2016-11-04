@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour {
 	private GameObject pauseMenu;
 	private Text levelText;
 	private bool doingSetup = false;
+	private bool isGameOver = false;
 
 	// Use this for initialization
 	void Awake () 
@@ -28,8 +29,6 @@ public class GameManager : MonoBehaviour {
 			Destroy (gameObject);
 
 		DontDestroyOnLoad (gameObject);
-
-		pauseMenu = GameObject.Find ("PauseMenuPanel");
 
 		//enemies = new List<EnemyMovement> ();
 		InitGame();
@@ -44,10 +43,15 @@ public class GameManager : MonoBehaviour {
 
 		// Toggle the Pause Menu when the escape key is pressed
 		if (Input.GetKeyDown ("escape"))
-		{
 			TogglePauseMenu ();
+		
+
+		if (isGameOver && Input.GetButtonDown ("Jump")) 
+		{
+			isGameOver = false;
+			SceneManager.LoadScene (0);
+			enabled = false;
 		}
-			
 	}
 
 	void InitGame()
@@ -58,6 +62,7 @@ public class GameManager : MonoBehaviour {
 		//Get a reference to our image LevelImage by finding it by name.
 		levelImage = GameObject.Find ("LevelImage");
 		gameOverImage = GameObject.Find ("GameOverImage");
+		pauseMenu = GameObject.Find ("PauseMenuPanel");
 
 		//Get a reference to our text LevelText's text component by finding it by name and calling GetComponent.
 		levelText = GameObject.Find("LevelText").GetComponent<Text>();
@@ -68,6 +73,7 @@ public class GameManager : MonoBehaviour {
 		//Set levelImage to active blocking player's view of the game board during setup.
 		levelImage.SetActive(true);
 		gameOverImage.SetActive (true);
+		pauseMenu.SetActive (true);
 
 		//Call the HideLevelImage function with a delay in seconds of levelStartDelay.
 		Invoke("HideLevelImage", levelStartDelay);
@@ -77,6 +83,7 @@ public class GameManager : MonoBehaviour {
 	{
 		levelImage.SetActive (false);
 		gameOverImage.SetActive (false);
+		pauseMenu.SetActive (false);
 		doingSetup = false;
 	}
 
@@ -103,8 +110,7 @@ public class GameManager : MonoBehaviour {
 	public void GameOver()
 	{
 		gameOverImage.SetActive (true);
-
-		enabled = false;
+		isGameOver = true;
 	}
 
 	void TogglePauseMenu()
@@ -118,5 +124,11 @@ public class GameManager : MonoBehaviour {
 			pauseMenu.SetActive (true);
 			onPauseScreen = true;
 		}
+	}
+
+	public void OnMainMenuButtonClick()
+	{
+		SceneManager.LoadScene (0);
+		enabled = false;
 	}
 }
