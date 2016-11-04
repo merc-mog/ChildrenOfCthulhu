@@ -23,8 +23,8 @@ public class PlayerController : MonoBehaviour {
 	{
 		rb2D = GetComponent<Rigidbody2D> ();
 		levelThreshold = 30;
-		stomachText.text = "Sustenance: " + stomach;
-		hpText.text = "HP: " + hp;
+		stomachText = GameObject.Find ("SustenanceText").GetComponent<Text>();
+		hpText = GameObject.Find("HPText").GetComponent<Text>();
 	}
 
 	void Update()
