@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour {
 	{
 		rb2D = GetComponent<Rigidbody2D> ();
 		levelThreshold = 30;
-		stomachText = GameObject.Find ("SustenanceText").GetComponent<Text>();
+		stomachText = GameObject.Find ("HungerText").GetComponent<Text>();
 		hpText = GameObject.Find("HPText").GetComponent<Text>();
 	}
 
@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour {
 			} else {
 				other.gameObject.SetActive (false);
 				stomach += other.gameObject.GetComponent<EnemyLevel> ().level * 10;
-				stomachText.text = "Sustenance: " + stomach;
+				stomachText.text = "Hunger: " + stomach;
 			}
 		}
 	}

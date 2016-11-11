@@ -7,5 +7,6 @@ public class LoadSceneOnClick : MonoBehaviour {
 	public void LoadByIndex(int sceneIndex)
 	{
 		SceneManager.LoadScene (sceneIndex);
+		GameManager.instance.enabled = true;
 	}
 }

@@ -31,9 +31,14 @@ public class GameManager : MonoBehaviour {
 		DontDestroyOnLoad (gameObject);
 
 		//enemies = new List<EnemyMovement> ();
+
+	}
+
+	void Start()
+	{
 		InitGame();
 	}
-	
+
 	// Update is called once per frame
 	void Update () 
 	{
@@ -51,6 +56,7 @@ public class GameManager : MonoBehaviour {
 			isGameOver = false;
 			SceneManager.LoadScene (0);
 			enabled = false;
+			level = 0;
 		}
 	}
 
@@ -68,12 +74,16 @@ public class GameManager : MonoBehaviour {
 		levelText = GameObject.Find("LevelText").GetComponent<Text>();
 
 		//Set the text of levelText to the string "Day" and append the current level number.
-		levelText.text = "Level " + level;
+		if(levelText)
+			levelText.text = "Level " + level;
 
 		//Set levelImage to active blocking player's view of the game board during setup.
-		levelImage.SetActive(true);
-		gameOverImage.SetActive (true);
-		pauseMenu.SetActive (true);
+		if(levelImage)
+			levelImage.SetActive(true);
+		if(gameOverImage)
+			gameOverImage.SetActive (true);
+		if(pauseMenu)
+			pauseMenu.SetActive (true);
 
 		//Call the HideLevelImage function with a delay in seconds of levelStartDelay.
 		Invoke("HideLevelImage", levelStartDelay);
@@ -81,9 +91,13 @@ public class GameManager : MonoBehaviour {
 
 	void HideLevelImage()
 	{
-		levelImage.SetActive (false);
-		gameOverImage.SetActive (false);
-		pauseMenu.SetActive (false);
+		if(levelImage)
+			levelImage.SetActive (false);
+		if(gameOverImage)
+			gameOverImage.SetActive (false);
+		if(pauseMenu)
+			pauseMenu.SetActive (false);
+		
 		doingSetup = false;
 	}
 
