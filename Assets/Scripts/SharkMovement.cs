@@ -14,14 +14,16 @@ public class SharkMovement : MonoBehaviour {
 	private bool chasing = false;
 	private bool isAggro = true;
 	private bool fleeing = false;
+	private bool hasMove = false;
 	private float moveStart = 0f;
 	private float moveEnd = 0f;
 	private Vector3 destination;
-	private bool hasMove = false;
+	private Animator animator;
 
 	void Start ()
 	{
 		destination = Vector3.zero;
+		animator = GetComponent<Animator> ();
 	}
 
 	void Awake () 
@@ -62,11 +64,12 @@ public class SharkMovement : MonoBehaviour {
 			}
 
 			// Changes direction the sprite is facing
-			if (moveDirection != Vector2.zero) 
-			{
-				float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-				transform.rotation = Quaternion.AngleAxis (angle - 180, Vector3.forward);
-			}
+//			if (moveDirection != Vector2.zero) 
+//			{
+//				float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+//
+//				transform.rotation = Quaternion.AngleAxis (angle - 180, Vector3.forward);
+//			}
 
 			// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
 
@@ -100,6 +103,13 @@ public class SharkMovement : MonoBehaviour {
 				hasMove = true;
 				moveStart = Time.time;
 				moveEnd = moveStart + 1f;
+
+				if ((rb2D.position.x - destination.x) < 0) 
+				{
+					GetComponent<SpriteRenderer> ().flipX = false;
+				} else {
+					GetComponent<SpriteRenderer> ().flipX = true;
+				}
 			}
 			else if (transform.position == destination || Time.time >= moveEnd) 
 			{
@@ -109,6 +119,14 @@ public class SharkMovement : MonoBehaviour {
 			{
 				rb2D.velocity = (destination * speed) / 10;
 			}
+		}
+	}
+
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.gameObject.CompareTag ("Player")) 
+		{
+			animator.SetTrigger ("SharkAttack");
 		}
 	}
 }

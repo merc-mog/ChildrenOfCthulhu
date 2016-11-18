@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour {
 	public float levelStartDelay = 2f;
 	public bool onPauseScreen = false;
 
-	//private List<EnemyMovement> enemies;
 	private int level = 0;
 	private GameObject gameOverImage;
 	private GameObject levelImage;
@@ -19,6 +18,7 @@ public class GameManager : MonoBehaviour {
 	private Text levelText;
 	private bool doingSetup = false;
 	private bool isGameOver = false;
+	private bool levelCompleted = false;
 
 	// Use this for initialization
 	void Awake () 
@@ -29,9 +29,6 @@ public class GameManager : MonoBehaviour {
 			Destroy (gameObject);
 
 		DontDestroyOnLoad (gameObject);
-
-		//enemies = new List<EnemyMovement> ();
-
 	}
 
 	void Start()
@@ -57,6 +54,13 @@ public class GameManager : MonoBehaviour {
 			SceneManager.LoadScene (0);
 			enabled = false;
 			level = 0;
+		}
+
+		if (levelCompleted && Input.GetButtonDown ("Jump")) 
+		{
+			levelCompleted = false;
+			level++;
+			InitGame ();
 		}
 	}
 
@@ -125,6 +129,11 @@ public class GameManager : MonoBehaviour {
 	{
 		gameOverImage.SetActive (true);
 		isGameOver = true;
+	}
+
+	public void levelComplete()
+	{
+		levelCompleted = true;
 	}
 
 	void TogglePauseMenu()

@@ -14,15 +14,17 @@ public class MedusaMovement : MonoBehaviour {
 	private bool chasing = false;
 	private bool isAggro = true;
 	private bool fleeing = false;
+	private bool hasMove = false;
 	private float moveStartTime = 0f;
 	private float moveEndTime = 0f;
 	private Vector2 dir;
-	private bool hasMove = false;
+	private Animator animator;
 
 	void Awake () 
 	{
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
 		rb2D = GetComponent<Rigidbody2D> ();
+		animator = GetComponent<Animator> ();
 	}
 
 	void Update () 
@@ -56,6 +58,7 @@ public class MedusaMovement : MonoBehaviour {
 				i++;
 			}
 
+			// Rotation
 			if (moveDirection != Vector2.zero) 
 			{
 				float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
