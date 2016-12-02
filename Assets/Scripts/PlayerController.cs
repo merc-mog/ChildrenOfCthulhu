@@ -4,20 +4,24 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
-	[HideInInspector]public bool canHide = false;
+	[HideInInspector]
+	public bool canHide = false;
+	public bool isHidden = false;
 	public float speed;
 	public float searchRadius = 1f;
-	public bool isHidden = false;
 	public int level = 1;
 	public int hp = 3;
 	public int stomach = 0;
 	public Text stomachText;
 	public Text hpText;
+	public Sprite canHideSprite;
+	public Sprite leaveHideSprite;
 
 	private Rigidbody2D rb2D;
 	private GameObject objectHiddenIn;
 	private float levelThreshold;
-	private int maxLevel = 3;
+	private int maxLevel = 4;
+	private SpriteRenderer spriteRenderer;
 
 	void Start()
 	{
@@ -25,6 +29,7 @@ public class PlayerController : MonoBehaviour {
 		levelThreshold = 30;
 		stomachText = GameObject.Find ("HungerText").GetComponent<Text>();
 		hpText = GameObject.Find("HPText").GetComponent<Text>();
+		spriteRenderer = GetComponent<SpriteRenderer> ();
 	}
 
 	void Update()
@@ -68,6 +73,18 @@ public class PlayerController : MonoBehaviour {
 				LevelUp ();
 			}
 
+			if (canHide) 
+			{
+				spriteRenderer.sprite = canHideSprite;
+			} else {
+				if (level > 3) 
+				{
+					spriteRenderer.sprite = Resources.Load ("Cthulhu_3", typeof(Sprite)) as Sprite;
+				} else {
+					spriteRenderer.sprite = Resources.Load ("Cthulhu_" + level, typeof(Sprite)) as Sprite;
+				}
+			}
+
 			CheckIfGameOver ();
 		}
 	}
@@ -88,14 +105,14 @@ public class PlayerController : MonoBehaviour {
 		if (canHide && Input.GetButtonDown ("Jump") && !isHidden) 
 		{
 			isHidden = true;
-		} else if (isHidden && Input.GetButtonDown ("Jump")) // If the player is already hidden and presses space, reveal the character
-		{
+		} else if (isHidden && Input.GetButtonDown ("Jump")) { // If the player is hidden and presses jump again, reveal the player.
 			isHidden = false;
 		}
 
 		// If the player is hidden, keep the player under the shelter
 		if (isHidden) 
 		{
+			spriteRenderer.sprite = leaveHideSprite;
 			transform.position = new Vector3(objectHiddenIn.transform.position.x, objectHiddenIn.transform.position.y, 0);
 		}
 	}
@@ -118,10 +135,11 @@ public class PlayerController : MonoBehaviour {
 
 	void LevelUp()
 	{
-		levelThreshold *= (levelThreshold / 10);
+		levelThreshold += 30 * level;
 		level++;
-
-		gameObject.GetComponent<SpriteRenderer> ().sprite = Resources.Load("Cthulhu_" + level, typeof(Sprite)) as Sprite;
+		if (level < 3) {
+			spriteRenderer.sprite = Resources.Load ("Cthulhu_" + level, typeof(Sprite)) as Sprite;
+		}
 	}
 
 	void CheckIfGameOver()

@@ -10,15 +10,16 @@ public class GameManager : MonoBehaviour {
 	public int sustenanceLevel = 0;
 	public float levelStartDelay = 2f;
 	public bool onPauseScreen = false;
+	public bool levelCompleted = false;
 
 	private int level = 0;
 	private GameObject gameOverImage;
 	private GameObject levelImage;
 	private GameObject pauseMenu;
+	private GameObject levelCompleteImage;
 	private Text levelText;
 	private bool doingSetup = false;
 	private bool isGameOver = false;
-	private bool levelCompleted = false;
 
 	// Use this for initialization
 	void Awake () 
@@ -73,6 +74,7 @@ public class GameManager : MonoBehaviour {
 		levelImage = GameObject.Find ("LevelImage");
 		gameOverImage = GameObject.Find ("GameOverImage");
 		pauseMenu = GameObject.Find ("PauseMenuPanel");
+		levelCompleteImage = GameObject.Find ("LevelCompleteImage");
 
 		//Get a reference to our text LevelText's text component by finding it by name and calling GetComponent.
 		levelText = GameObject.Find("LevelText").GetComponent<Text>();
@@ -88,6 +90,8 @@ public class GameManager : MonoBehaviour {
 			gameOverImage.SetActive (true);
 		if(pauseMenu)
 			pauseMenu.SetActive (true);
+		if (levelCompleteImage)
+			levelCompleteImage.SetActive (true);
 
 		//Call the HideLevelImage function with a delay in seconds of levelStartDelay.
 		Invoke("HideLevelImage", levelStartDelay);
@@ -101,6 +105,8 @@ public class GameManager : MonoBehaviour {
 			gameOverImage.SetActive (false);
 		if(pauseMenu)
 			pauseMenu.SetActive (false);
+		if (levelCompleteImage)
+			levelCompleteImage.SetActive (false);
 		
 		doingSetup = false;
 	}

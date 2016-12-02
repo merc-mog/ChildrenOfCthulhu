@@ -35,7 +35,6 @@ public class SharkMovement : MonoBehaviour {
 	void Update () 
 	{
 		Collider2D[] objectsInArea = Physics2D.OverlapCircleAll (transform.position, searchRadius);
-		Vector2 moveDirection = rb2D.velocity;
 
 		if (GameManager.instance.onPauseScreen) 
 		{
