@@ -158,6 +158,8 @@ public class GameManager : MonoBehaviour {
 	public void OnMainMenuButtonClick()
 	{
 		SceneManager.LoadScene (0);
+		level--;
+		onPauseScreen = false;
 		enabled = false;
 	}
 }

@@ -14,13 +14,13 @@ public class PlayerController : MonoBehaviour {
 	public int stomach = 0;
 	public Text stomachText;
 	public Text hpText;
-	public Sprite canHideSprite;
-	public Sprite leaveHideSprite;
+//	public Sprite canHideSprite;
+//	public Sprite leaveHideSprite;
 
 	private Rigidbody2D rb2D;
 	private GameObject objectHiddenIn;
 	private float levelThreshold;
-	private int maxLevel = 4;
+	private int maxLevel = 3;
 	private SpriteRenderer spriteRenderer;
 
 	void Start()
@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour {
 			rb2D.gravityScale = 0f;
 			return;
 		} else 	{
+			rb2D.gravityScale = 0.5f;
 			// Check to see if the player can hide in shelter
 			int i = 0;
 			while (i < objectsInArea.Length && !canHide) 
@@ -68,22 +69,22 @@ public class PlayerController : MonoBehaviour {
 			}
 
 			// Check to see if stomach is big enough to level up
-			if (stomach >= levelThreshold && level < maxLevel) 
+			if (stomach >= levelThreshold) 
 			{
 				LevelUp ();
 			}
 
-			if (canHide) 
-			{
-				spriteRenderer.sprite = canHideSprite;
-			} else {
-				if (level > 3) 
-				{
-					spriteRenderer.sprite = Resources.Load ("Cthulhu_3", typeof(Sprite)) as Sprite;
-				} else {
-					spriteRenderer.sprite = Resources.Load ("Cthulhu_" + level, typeof(Sprite)) as Sprite;
-				}
-			}
+//			if (canHide) 
+//			{
+//				spriteRenderer.sprite = canHideSprite;
+//			} else {
+//				if (level > 3) 
+//				{
+//					spriteRenderer.sprite = Resources.Load ("Cthulhu_3", typeof(Sprite)) as Sprite;
+//				} else {
+//					spriteRenderer.sprite = Resources.Load ("Cthulhu_" + level, typeof(Sprite)) as Sprite;
+//				}
+//			}
 
 			CheckIfGameOver ();
 		}
@@ -112,7 +113,7 @@ public class PlayerController : MonoBehaviour {
 		// If the player is hidden, keep the player under the shelter
 		if (isHidden) 
 		{
-			spriteRenderer.sprite = leaveHideSprite;
+//			spriteRenderer.sprite = leaveHideSprite;
 			transform.position = new Vector3(objectHiddenIn.transform.position.x, objectHiddenIn.transform.position.y, 0);
 		}
 	}
@@ -137,7 +138,11 @@ public class PlayerController : MonoBehaviour {
 	{
 		levelThreshold += 30 * level;
 		level++;
-		if (level < 3) {
+
+		if (level > maxLevel) 
+		{
+			spriteRenderer.sprite = Resources.Load ("Cthulhu_" + maxLevel, typeof(Sprite)) as Sprite;
+		} else {
 			spriteRenderer.sprite = Resources.Load ("Cthulhu_" + level, typeof(Sprite)) as Sprite;
 		}
 	}
