@@ -62,16 +62,7 @@ public class SharkMovement : MonoBehaviour {
 				i++;
 			}
 
-			// Changes direction the sprite is facing
-//			if (moveDirection != Vector2.zero) 
-//			{
-//				float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-//
-//				transform.rotation = Quaternion.AngleAxis (angle - 180, Vector3.forward);
-//			}
-
 			// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
-
 			if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > this.GetComponent<EnemyLevel> ().level) 
 			{
 				isAggro = false;

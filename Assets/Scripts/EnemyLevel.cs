@@ -7,5 +7,6 @@ public class EnemyLevel : MonoBehaviour {
 
 	void Start () {
 		level = this.level;
+//		GameManager.instance.AddEnemyToList (this);
 	}
 }

@@ -14,8 +14,6 @@ public class PlayerController : MonoBehaviour {
 	public int stomach = 0;
 	public Text stomachText;
 	public Text hpText;
-//	public Sprite canHideSprite;
-//	public Sprite leaveHideSprite;
 
 	private Rigidbody2D rb2D;
 	private GameObject objectHiddenIn;
@@ -74,18 +72,6 @@ public class PlayerController : MonoBehaviour {
 				LevelUp ();
 			}
 
-//			if (canHide) 
-//			{
-//				spriteRenderer.sprite = canHideSprite;
-//			} else {
-//				if (level > 3) 
-//				{
-//					spriteRenderer.sprite = Resources.Load ("Cthulhu_3", typeof(Sprite)) as Sprite;
-//				} else {
-//					spriteRenderer.sprite = Resources.Load ("Cthulhu_" + level, typeof(Sprite)) as Sprite;
-//				}
-//			}
-
 			CheckIfGameOver ();
 		}
 	}
@@ -100,6 +86,17 @@ public class PlayerController : MonoBehaviour {
 		if (!isHidden) 
 		{
 			rb2D.AddForce (movement * speed);
+			GameManager.instance.hideImage.GetComponent<Image> ().sprite = Resources.Load ("hide_in_icon", typeof(Sprite)) as Sprite;
+		} else {
+			transform.position = new Vector3(objectHiddenIn.transform.position.x, objectHiddenIn.transform.position.y, 0);
+			GameManager.instance.hideImage.GetComponent<Image> ().sprite = Resources.Load ("hide_out_icon", typeof(Sprite)) as Sprite;
+		}
+
+		if (canHide) 
+		{
+			GameManager.instance.hideImage.SetActive (true);
+		} else {
+			GameManager.instance.hideImage.SetActive (false);
 		}
 
 		// If the player can hide and presses space, hide the character
@@ -109,17 +106,13 @@ public class PlayerController : MonoBehaviour {
 		} else if (isHidden && Input.GetButtonDown ("Jump")) { // If the player is hidden and presses jump again, reveal the player.
 			isHidden = false;
 		}
-
-		// If the player is hidden, keep the player under the shelter
-		if (isHidden) 
-		{
-//			spriteRenderer.sprite = leaveHideSprite;
-			transform.position = new Vector3(objectHiddenIn.transform.position.x, objectHiddenIn.transform.position.y, 0);
-		}
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
+		if (isHidden) 
+			return;
+		
 		if(other.gameObject.CompareTag("Enemy"))
 		{
 			if (other.gameObject.GetComponent<EnemyLevel> ().level > level) 
@@ -127,6 +120,7 @@ public class PlayerController : MonoBehaviour {
 				hp--;
 				hpText.text = "HP: " + hp;
 			} else {
+				GameManager.instance.enemies.Remove (other.gameObject);
 				other.gameObject.SetActive (false);
 				stomach += other.gameObject.GetComponent<EnemyLevel> ().level * 10;
 				stomachText.text = "Hunger: " + stomach;

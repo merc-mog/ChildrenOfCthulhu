@@ -37,6 +37,8 @@ public class MedusaMovement : MonoBehaviour {
 			rb2D.gravityScale = 0f;
 			return;
 		} else {
+			rb2D.gravityScale = 0.5f;
+
 			int i = 0;
 			while (i < objectsInArea.Length) 
 			{
