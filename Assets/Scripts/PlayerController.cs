@@ -15,11 +15,13 @@ public class PlayerController : MonoBehaviour {
 	public Text stomachText;
 	public Text hpText;
 
-	private Rigidbody2D rb2D;
-	private GameObject objectHiddenIn;
 	private float levelThreshold;
 	private int maxLevel = 3;
+	private bool moving = false;
+	private Rigidbody2D rb2D;
+	private GameObject objectHiddenIn;
 	private SpriteRenderer spriteRenderer;
+	private Animator animator;
 
 	void Start()
 	{
@@ -28,6 +30,7 @@ public class PlayerController : MonoBehaviour {
 		stomachText = GameObject.Find ("HungerText").GetComponent<Text>();
 		hpText = GameObject.Find("HPText").GetComponent<Text>();
 		spriteRenderer = GetComponent<SpriteRenderer> ();
+		animator = GetComponent<Animator> ();
 	}
 
 	void Update()
@@ -38,9 +41,11 @@ public class PlayerController : MonoBehaviour {
 		if (GameManager.instance.onPauseScreen) 
 		{
 			rb2D.gravityScale = 0f;
+
 			return;
 		} else 	{
 			rb2D.gravityScale = 0.5f;
+
 			// Check to see if the player can hide in shelter
 			int i = 0;
 			while (i < objectsInArea.Length && !canHide) 
@@ -60,7 +65,7 @@ public class PlayerController : MonoBehaviour {
 			}
 
 			// Rotation
-			if (moveDirection != Vector2.zero) 
+			if (moving) 
 			{
 				float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
 				transform.rotation = Quaternion.AngleAxis (angle - 90, Vector3.forward);
@@ -79,8 +84,15 @@ public class PlayerController : MonoBehaviour {
 	void FixedUpdate()
 	{
 		float moveHorizontal = Input.GetAxis ("Horizontal");
-		float moveVeritcal = Input.GetAxis ("Vertical");
-		Vector3 movement = new Vector3 (moveHorizontal, moveVeritcal, 0);
+		float moveVertical = Input.GetAxis ("Vertical");
+		Vector3 movement = new Vector3 (moveHorizontal, moveVertical, 0);
+
+		if (moveHorizontal != 0 || moveVertical != 0) 
+		{
+			moving = true;
+		} else {
+			moving = false;
+		}
 
 		// Movement
 		if (!isHidden) 
@@ -91,6 +103,8 @@ public class PlayerController : MonoBehaviour {
 			transform.position = new Vector3(objectHiddenIn.transform.position.x, objectHiddenIn.transform.position.y, 0);
 			GameManager.instance.hideImage.GetComponent<Image> ().sprite = Resources.Load ("hide_out_icon", typeof(Sprite)) as Sprite;
 		}
+
+		animator.SetBool ("CthulhuMoving", moving);
 
 		if (canHide) 
 		{
@@ -139,6 +153,8 @@ public class PlayerController : MonoBehaviour {
 		} else {
 			spriteRenderer.sprite = Resources.Load ("Cthulhu_" + level, typeof(Sprite)) as Sprite;
 		}
+
+		animator.SetInteger ("Level", level);
 	}
 
 	void CheckIfGameOver()
