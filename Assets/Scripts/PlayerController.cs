@@ -89,9 +89,12 @@ public class PlayerController : MonoBehaviour {
 
 		if (moveHorizontal != 0 || moveVertical != 0) 
 		{
+			animator.enabled = true;
 			moving = true;
 		} else {
+			animator.enabled = false;
 			moving = false;
+			transform.rotation = Quaternion.AngleAxis (0, Vector3.forward);
 		}
 
 		// Movement
@@ -104,8 +107,20 @@ public class PlayerController : MonoBehaviour {
 			GameManager.instance.hideImage.GetComponent<Image> ().sprite = Resources.Load ("hide_out_icon", typeof(Sprite)) as Sprite;
 		}
 
-		animator.SetBool ("CthulhuMoving", moving);
+		if(animator)
+			animator.SetBool ("CthulhuMoving", moving);
 
+		if (!moving) 
+		{
+			if (level > maxLevel) 
+			{
+				spriteRenderer.sprite = Resources.Load ("Cthulhu_" + maxLevel, typeof(Sprite)) as Sprite;
+			} else {
+				spriteRenderer.sprite = Resources.Load ("Cthulhu_" + level, typeof(Sprite)) as Sprite;
+			}
+		}
+
+		// Hiding
 		if (canHide) 
 		{
 			GameManager.instance.hideImage.SetActive (true);
@@ -113,11 +128,10 @@ public class PlayerController : MonoBehaviour {
 			GameManager.instance.hideImage.SetActive (false);
 		}
 
-		// If the player can hide and presses space, hide the character
 		if (canHide && Input.GetButtonDown ("Jump") && !isHidden) 
 		{
 			isHidden = true;
-		} else if (isHidden && Input.GetButtonDown ("Jump")) { // If the player is hidden and presses jump again, reveal the player.
+		} else if (isHidden && Input.GetButtonDown ("Jump")) { 
 			isHidden = false;
 		}
 	}
@@ -144,8 +158,8 @@ public class PlayerController : MonoBehaviour {
 
 	void LevelUp()
 	{
-		levelThreshold += 30 * level;
 		level++;
+		levelThreshold += 30 * level;
 
 		if (level > maxLevel) 
 		{

@@ -3,32 +3,32 @@ using System.Collections;
 using Random = UnityEngine.Random;
 using UnityEngine.UI;
 
-public class MedusaMovement : MonoBehaviour {
+public class FishMovement : MonoBehaviour {
 
-	public float searchRadius = 1.5f;
+	public float searchRadius = 50f;
 	public float speed;
-	public float maxMovement;
+	public float maxSpeed = 20;
 	[HideInInspector]public Rigidbody2D rb2D;
 
 	private Transform player;
 	private bool chasing = false;
 	private bool isAggro = true;
 	private bool fleeing = false;
-	private bool hasMove = false;
-	private float moveStartTime = 0f;
-	private float moveEndTime = 0f;
-	private Vector2 dir;
+	private bool moving = false;
+	private Vector3 destination;
 	private Animator animator;
+
+	void Start () {
+		animator = GetComponent<Animator> ();
+	}
 
 	void Awake () 
 	{
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
 		rb2D = GetComponent<Rigidbody2D> ();
-		animator = GetComponent<Animator> ();
 	}
 
-	void Update () 
-	{
+	void Update () {
 		Collider2D[] objectsInArea = Physics2D.OverlapCircleAll (transform.position, searchRadius);
 		Vector2 moveDirection = rb2D.velocity;
 
@@ -37,16 +37,15 @@ public class MedusaMovement : MonoBehaviour {
 			rb2D.gravityScale = 0f;
 			return;
 		} else {
-			rb2D.gravityScale = 0.5f;
-
 			int i = 0;
 			while (i < objectsInArea.Length) 
 			{
-				if (objectsInArea [i].tag == "Player" && !player.GetComponent<PlayerController> ().isHidden) 
+				if (objectsInArea [i].tag == "Player" && !player.GetComponent<PlayerController> ().isHidden)
 				{
 					if (isAggro) 
 					{
 						chasing = true;
+
 					} else {
 						fleeing = true;
 					}
@@ -56,15 +55,16 @@ public class MedusaMovement : MonoBehaviour {
 
 				chasing = false;
 				fleeing = false;
-
 				i++;
 			}
+
+			animator.SetBool ("FishSwimming", moving);
 
 			// Rotation
 			if (moveDirection != Vector2.zero) 
 			{
 				float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-				transform.rotation = Quaternion.AngleAxis (angle - 90, Vector3.forward);
+				transform.rotation = Quaternion.AngleAxis (angle, Vector3.forward);
 			}
 
 			// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
@@ -76,35 +76,16 @@ public class MedusaMovement : MonoBehaviour {
 	}
 
 	void FixedUpdate ()
-	{
-		// Determine if the enemy should chase the player or flee from the player.
+	{			
+		// Determine where the enemy should chase the player or flee from the player.
 		if (chasing) 
 		{
-			dir = player.transform.position - transform.position;
-			rb2D.AddForce (dir * speed);
-			hasMove = false;
+			destination = player.transform.position - transform.position;
+			moving = true;
+			rb2D.AddForce (destination * speed);
+		} else if (fleeing)	{
+			destination = -(player.transform.position - transform.position);
+			rb2D.AddForce (destination * speed);
 		} 
-		else if (fleeing)
-		{
-			dir = -(player.transform.position - transform.position);
-			rb2D.AddForce (dir * speed);
-			hasMove = false;
-		}
-		else 
-		{
-			if (!hasMove)
-			{
-				dir = new Vector2 (Random.Range (-maxMovement, maxMovement), Random.Range (-maxMovement, maxMovement));
-				rb2D.AddForce (dir * speed);
-				moveStartTime = Time.time;
-				moveEndTime = moveStartTime + 1f;
-				hasMove = true;
-			}
-
-			if (Time.time >= moveEndTime) 
-			{
-				hasMove = false;
-			}
-		}
 	}
 }

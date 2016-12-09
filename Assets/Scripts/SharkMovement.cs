@@ -58,12 +58,11 @@ public class SharkMovement : MonoBehaviour {
 
 				chasing = false;
 				fleeing = false;
-
 				i++;
 			}
 
 			// If the player's level is higher than the enemy's level then set their collider to a trigger to be eaten.
-			if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level > this.GetComponent<EnemyLevel> ().level) 
+			if (GameObject.Find ("Player").gameObject.GetComponent<PlayerController> ().level >= this.GetComponent<EnemyLevel> ().level) 
 			{
 				isAggro = false;
 			}
@@ -71,28 +70,33 @@ public class SharkMovement : MonoBehaviour {
 	}
 
 	void FixedUpdate ()
-	{			
+	{		
+		Vector2 moveDirection = rb2D.velocity;
+
 		// Determine if the enemy should chase the player or flee from the player.
 		if (chasing) 
 		{
 			destination = player.transform.position - transform.position;
 			rb2D.AddForce (destination * speed);
 			hasMove = false;
-		} 
-		else if (fleeing)
-		{
+			// Rotation
+			if (moveDirection != Vector2.zero) 
+			{
+				float angle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+				transform.rotation = Quaternion.AngleAxis (angle, Vector3.forward);
+			}
+		} else if (fleeing)	{
 			destination = -(player.transform.position - transform.position);
 			rb2D.AddForce (destination * speed);
 			hasMove = false;
-		}
-		else 
-		{
+		} else {
 			if (!hasMove)
 			{
 				destination = new Vector3 (Random.Range (-maxMovement, maxMovement), 0, 0);
 				hasMove = true;
 				moveStart = Time.time;
 				moveEnd = moveStart + 1f;
+				transform.rotation = Quaternion.AngleAxis (0, Vector3.forward);
 
 				if ((rb2D.position.x - destination.x) < 0) 
 				{
@@ -100,13 +104,9 @@ public class SharkMovement : MonoBehaviour {
 				} else {
 					GetComponent<SpriteRenderer> ().flipX = true;
 				}
-			}
-			else if (transform.position == destination || Time.time >= moveEnd) 
-			{
+			} else if (transform.position == destination || Time.time >= moveEnd) {
 				hasMove = false;
-			}
-			else if (transform.position != destination) // Shark should move steadily toward a position when it has a move.
-			{
+			} else if (transform.position != destination) {
 				rb2D.velocity = (destination * speed) / 10;
 			}
 		}
