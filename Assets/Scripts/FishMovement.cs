@@ -76,18 +76,25 @@ public class FishMovement : MonoBehaviour {
 	}
 
 	void FixedUpdate ()
-	{			
-		// Determine where the enemy should chase the player or flee from the player.
-		if (!player.GetComponent<PlayerController> ().isHit) 
-		{
-			if (chasing) {
-				destination = player.transform.position - transform.position;
-				moving = true;
-				rb2D.AddForce (destination * speed);
-			} else if (fleeing) {
-				destination = -(player.transform.position - transform.position);
-				rb2D.AddForce (destination * speed);
-			} 
+	{		
+		if (GameManager.instance.doingSetup)
+			return;
+
+		if (!GameManager.instance.onPauseScreen)
+		{	
+			// Determine where the enemy should chase the player or flee from the player.
+			if (!player.GetComponent<PlayerController> ().isHit) 
+			{
+				if (chasing) 
+				{
+					destination = player.transform.position - transform.position;
+					moving = true;
+					rb2D.AddForce (destination * speed);
+				} else if (fleeing) {
+					destination = -(player.transform.position - transform.position);
+					rb2D.AddForce (destination * speed);
+				} 
+			}
 		}
 	}
 }

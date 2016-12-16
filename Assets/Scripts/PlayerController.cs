@@ -97,7 +97,7 @@ public class PlayerController : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		if (!isHit) 
+		if (!isHit && !GameManager.instance.onPauseScreen) 
 		{
 			float moveHorizontal = Input.GetAxis ("Horizontal");
 			float moveVertical = Input.GetAxis ("Vertical");

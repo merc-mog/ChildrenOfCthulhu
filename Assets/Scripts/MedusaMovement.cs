@@ -18,13 +18,11 @@ public class MedusaMovement : MonoBehaviour {
 	private float moveStartTime = 0f;
 	private float moveEndTime = 0f;
 	private Vector2 dir;
-	private Animator animator;
 
 	void Awake () 
 	{
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
 		rb2D = GetComponent<Rigidbody2D> ();
-		animator = GetComponent<Animator> ();
 	}
 
 	void Update () 
@@ -77,33 +75,35 @@ public class MedusaMovement : MonoBehaviour {
 
 	void FixedUpdate ()
 	{
-		// Determine if the enemy should chase the player or flee from the player.
-		if (chasing) 
-		{
-			dir = player.transform.position - transform.position;
-			rb2D.AddForce (dir * speed);
-			hasMove = false;
-		} 
-		else if (fleeing)
-		{
-			dir = -(player.transform.position - transform.position);
-			rb2D.AddForce (dir * speed);
-			hasMove = false;
-		}
-		else 
-		{
-			if (!hasMove)
-			{
-				dir = new Vector2 (Random.Range (-maxMovement, maxMovement), Random.Range (-maxMovement, maxMovement));
-				rb2D.AddForce (dir * speed);
-				moveStartTime = Time.time;
-				moveEndTime = moveStartTime + 1f;
-				hasMove = true;
-			}
+		if (GameManager.instance.doingSetup)
+			return;
 
-			if (Time.time >= moveEndTime) 
+		if (!GameManager.instance.onPauseScreen)
+		{
+			// Determine if the enemy should chase the player or flee from the player.
+			if (chasing)
 			{
+				dir = player.transform.position - transform.position;
+				rb2D.AddForce (dir * speed);
 				hasMove = false;
+			} else if (fleeing) {
+				dir = -(player.transform.position - transform.position);
+				rb2D.AddForce (dir * speed);
+				hasMove = false;
+			} else {
+				if (!hasMove) 
+				{
+					dir = new Vector2 (Random.Range (-maxMovement, maxMovement), Random.Range (-maxMovement, maxMovement));
+					rb2D.AddForce (dir * speed);
+					moveStartTime = Time.time;
+					moveEndTime = moveStartTime + 1f;
+					hasMove = true;
+				}
+
+				if (Time.time >= moveEndTime) 
+				{
+					hasMove = false;
+				}
 			}
 		}
 	}
